@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_local">
+
+    <fragment
+        android:id="@+id/navigation_local"
+        android:name="com.example.videoplayer.ui.local.LocalFragment"
+        android:label="Video"
+        tools:layout="@layout/fragment_local" />
+
+    <fragment
+        android:id="@+id/navigation_playlist"
+        android:name="com.example.videoplayer.ui.playlist.PlaylistFragment"
+        android:label="Play list"
+        tools:layout="@layout/fragment_playlist" />
+</navigation>

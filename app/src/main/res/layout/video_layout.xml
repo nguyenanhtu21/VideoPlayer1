@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="#F8F5F5"
+    android:orientation="horizontal">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/thumbnailCard"
+        android:layout_width="112dp"
+        android:layout_height="62dp">
+
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_launcher"></ImageView>
+
+        <TextView
+            android:id="@+id/videoDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:background="@color/duration"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:text="02:50"
+            android:textColor="@color/white"
+            android:textSize="12dp"></TextView>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="114dp"
+        android:layout_marginEnd="40dp"
+        android:orientation="vertical">
+        <!--        android:layout_centerVertical="true">-->
+
+        <TextView
+            android:id="@+id/video_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="Title"
+            android:textColor="@color/black"
+            android:textSize="16dp"
+            android:textStyle="normal"></TextView>
+
+        <TextView
+            android:id="@+id/video_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:text="Path"
+            android:textColor="@color/video_size"
+            android:textSize="10sp"></TextView>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/menu_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        app:srcCompat="@drawable/ellipsis_vertical_solid" />
+
+</RelativeLayout>
