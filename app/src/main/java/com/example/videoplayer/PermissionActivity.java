@@ -1,5 +1,6 @@
 package com.example.videoplayer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -20,23 +21,26 @@ public class PermissionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_permission);
         allow_btn = findViewById(R.id.allow_per_btn);
         if(ContextCompat.checkSelfPermission(PermissionActivity.this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){
-            Intent intent = new Intent(PermissionActivity.this, MainActivity.class);
-            startActivity(intent);
-        }else {
-            allow_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ActivityCompat.requestPermissions(PermissionActivity.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            STORAGE_PERMISSION_REQUEST_CODE);
-                    if(ContextCompat.checkSelfPermission(PermissionActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) {
-                        Intent intent = new Intent(PermissionActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                }
-            });
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(PermissionActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_REQUEST_CODE);
+        }else{
+            startActivity(new Intent(PermissionActivity.this, MainActivity.class));
+        }
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == STORAGE_PERMISSION_REQUEST_CODE){
+            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                startActivity(new Intent(PermissionActivity.this, MainActivity.class));
+            }else{
+                ActivityCompat.requestPermissions(PermissionActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        STORAGE_PERMISSION_REQUEST_CODE);
+            }
         }
     }
 }

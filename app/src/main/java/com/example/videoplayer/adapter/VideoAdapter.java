@@ -1,12 +1,26 @@
 package com.example.videoplayer.adapter;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,12 +30,13 @@ import com.example.videoplayer.PlayVideoActivity;
 import com.example.videoplayer.R;
 import com.example.videoplayer.model.Video;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
-    ArrayList<Video> videoList;
-    Context context;
+    public static ArrayList<Video> videoList;
+    final Context context;
 
     public VideoAdapter(ArrayList<Video> videoList, Context context) {
         this.videoList = videoList;
@@ -48,15 +63,74 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 .placeholder(R.drawable.video_icon)
                 .centerCrop()
                 .into(holder.video_thumbnail);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.video_thumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, PlayVideoActivity.class);
+                intent.putExtra("p", holder.getAdapterPosition());
                 context.startActivity(intent);
             }
         });
+        String filePath = videoList.get(position).getPath();
+        holder.menu_btn.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, holder.menu_btn);
+            popupMenu.inflate(R.menu.video_menu);
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (item.getItemId() == R.id.rename_item) {
+                        renameVideo(filePath);
+                        return true;
+                    } else if (item.getItemId() == R.id.delete_item) {
+                        Toast.makeText(context, "delete", Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            popupMenu.show();
+        });
     }
 
+    public void renameVideo(String filePath) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Rename File");
+        final EditText editText = new EditText(context);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        final File file = new File(filePath);
+        String videoName = file.getName();
+        videoName = videoName.substring(0, videoName.lastIndexOf("."));
+        editText.setText(videoName);
+        builder.setView(editText);
+        editText.requestFocus();
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String onlyPath = file.getParentFile().getAbsolutePath();
+                String extension = file.getAbsolutePath();
+                extension = extension.substring(extension.lastIndexOf("."));
+                String newPath  = onlyPath  +"/"+ editText.getText().toString() + extension;
+                File newFile = new File(newPath);
+
+                boolean rename = file.renameTo(newFile);
+                if(rename){
+                    context.getApplicationContext().getContentResolver().
+                            delete(MediaStore.Files.getContentUri("external"),
+                            MediaStore.MediaColumns.DATA+"=?",
+                            new String[]{file.getAbsolutePath()});
+                    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    intent.setData(Uri.fromFile(newFile));
+                    context.getApplicationContext().sendBroadcast(intent);
+                    notifyDataSetChanged();
+                    Toast.makeText(context,"Renamed",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.create().show();
+    }
     @Override
     public int getItemCount() {
         return videoList.size();
@@ -65,6 +139,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public class VideoViewHolder extends RecyclerView.ViewHolder{
         TextView video_title, video_size, video_duration;
         ImageView video_thumbnail, menu_btn;
+
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             video_title = itemView.findViewById(R.id.video_title);
@@ -75,20 +150,24 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         }
     }
 
-    public String timeConvert(long value){
+
+    public String timeConvert(long value) {
         String videoDuration;
-        long duration = (long)value;
-        long hours = (duration/3600000);
-        long minutes = (duration/60000)%60000;
-        long seconds = (duration/60000)%1000;
-        if (hours>0){
-            videoDuration = String.format("%02d:%02d:%02d",hours,minutes,seconds);
-        }else if(minutes>0){
-            videoDuration = String.format("%02d:%02d",minutes,seconds);
-        }else{
-            videoDuration = String.format("00:%02d",seconds);
+        long duration = value;
+        long hours = (duration / 3600000);
+        long minutes = (duration / 60000) % 60;
+        long seconds = (duration / 1000) % 60;
+
+        if (hours >= 1) {
+            videoDuration = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else if (minutes >= 1) {
+            videoDuration = String.format("%02d:%02d", minutes, seconds);
+        } else {
+            videoDuration = String.format("00:%02d", seconds);
         }
+
         return videoDuration;
     }
+
 }
 

@@ -1,9 +1,10 @@
 package com.example.videoplayer.model;
 
 public class Video {
-    String title, path, thumbnailUri, size, duration;
+    String id, title, path, thumbnailUri, size, duration;
 
-    public Video(String title, String path, String thumbnailUri, String size, String duration) {
+    public Video(String id,String title, String path, String thumbnailUri, String size, String duration) {
+        this.id = id;
         this.title = title;
         this.path = path;
         this.thumbnailUri = thumbnailUri;
@@ -15,6 +16,14 @@ public class Video {
         this.title = title;
         this.path = path;
         this.thumbnailUri = thumbnail;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getThumbnailUri() {

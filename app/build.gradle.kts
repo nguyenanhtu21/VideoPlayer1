@@ -40,7 +40,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.navigation:navigation-fragment:2.7.6")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
-    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("androidx.navigation:navigation-ui:2.7.6")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
