@@ -23,12 +23,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.videoplayer.PlayVideoActivity;
 import com.example.videoplayer.R;
+import com.example.videoplayer.database.DatabaseHelper;
+import com.example.videoplayer.model.Playlist;
 import com.example.videoplayer.model.Video;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,9 +86,24 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                         renameVideo(filePath);
                         return true;
                     } else if (item.getItemId() == R.id.delete_item) {
-                        Toast.makeText(context, "delete", Toast.LENGTH_SHORT).show();
+                        deleteVieo(filePath);
                         return true;
-                    } else {
+                    }else if (item.getItemId()==R.id.add_to_playlist_item){
+                        AddVideoPlaylistAdapter adapter;
+                        DatabaseHelper dbHelper = new DatabaseHelper(context, "videoplayer.db", null, 1);
+                        ArrayList<Playlist> playlists = dbHelper.getAllPlaylists(context);
+                        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetTheme);
+                        View bottomSheetView = LayoutInflater.from(context).inflate(R.layout.playlist_bottom_sheet,
+                                v.findViewById(R.id.bottom_sheet));
+                        RecyclerView recyclerView = bottomSheetView.findViewById(R.id.playlist_recyclerView);
+                        adapter = new AddVideoPlaylistAdapter(context, playlists);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                        bottomSheetDialog.setContentView(bottomSheetView);
+                        bottomSheetDialog.show();
+                        return true;
+                    }
+                    else {
                         return false;
                     }
                 }
@@ -92,10 +111,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             popupMenu.show();
         });
     }
+    public  void addVideoToPlaylist(Video video){
+
+    }
 
     public void renameVideo(String filePath) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Rename File");
+        builder.setTitle("Đổi tên");
         final EditText editText = new EditText(context);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
         final File file = new File(filePath);
@@ -123,14 +145,24 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     intent.setData(Uri.fromFile(newFile));
                     context.getApplicationContext().sendBroadcast(intent);
                     notifyDataSetChanged();
-                    Toast.makeText(context,"Renamed",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"Đã đổi tên",Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"Đổi tên không thành công",Toast.LENGTH_SHORT).show();
                 }
             }
         });
         builder.create().show();
     }
+    public void deleteVieo(String filePath){
+        final File file = new File(filePath);
+        context.getApplicationContext().getContentResolver().
+                delete(MediaStore.Files.getContentUri("external"),
+                        MediaStore.MediaColumns.DATA+"=?",
+                        new String[]{file.getAbsolutePath()});
+        notifyDataSetChanged();
+        Toast.makeText(context,"Đã xóa",Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public int getItemCount() {
         return videoList.size();

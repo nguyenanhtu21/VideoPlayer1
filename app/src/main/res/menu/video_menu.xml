@@ -4,8 +4,11 @@
 
     <item
         android:id="@+id/rename_item"
-        android:title="Rename" />
+        android:title="Đổi tên" />
     <item
         android:id="@+id/delete_item"
-        android:title="Delete" />
+        android:title="Xóa" />
+    <item
+        android:id="@+id/add_to_playlist_item"
+        android:title="Thêm vào danh sách phát" />
 </menu>
