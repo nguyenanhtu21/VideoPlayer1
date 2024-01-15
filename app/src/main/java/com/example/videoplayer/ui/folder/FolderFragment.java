@@ -1,8 +1,11 @@
 package com.example.videoplayer.ui.folder;
 
+import static com.example.videoplayer.adapter.PlaylistAdapter.playlists;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,6 +30,7 @@ public class FolderFragment extends Fragment {
     ArrayList<Video> videoList = new ArrayList<>();
     FolderAdapter adapter;
     RecyclerView recyclerView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,12 +61,12 @@ public class FolderFragment extends Fragment {
 
         if(cursor != null){
             while (cursor.moveToNext()){
-                String title = cursor.getString(0);
-                String path = cursor.getString(1);
-                long id = cursor.getLong(2);
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));
+                String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
                 Uri thumbnailuri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
-                String size = cursor.getString(3);
-                String duration = cursor.getString(4);
+                String size = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
+                String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
                 String thumbnailUri = thumbnailuri.toString();
                 String idString;
                 idString = String.valueOf(id);

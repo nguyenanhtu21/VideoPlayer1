@@ -1,8 +1,14 @@
 package com.example.videoplayer;
 
+import static com.example.videoplayer.adapter.PlaylistAdapter.playlists;
+
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.Manifest;
+import android.view.LayoutInflater;
+import android.view.View;
+
+import com.example.videoplayer.model.Video;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,10 +23,10 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.videoplayer.databinding.ActivityMainBinding;
 
 import java.security.Permission;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,5 +41,4 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
-
 }

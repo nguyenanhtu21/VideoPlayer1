@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="5 videos"
-            android:textColor="@color/black"
+            android:textColor="@color/video_size"
             android:textSize="12sp"
             android:textStyle="normal"></TextView>
     </LinearLayout>

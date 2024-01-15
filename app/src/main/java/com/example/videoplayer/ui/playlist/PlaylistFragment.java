@@ -40,9 +40,9 @@ public class PlaylistFragment extends Fragment {
     ArrayList<Playlist> playlistsArraylist;
 
     public static final String DATABASE_NAME = "videoplayer.db";
-    DatabaseHelper dbHelper = new DatabaseHelper(getContext(), DATABASE_NAME, null, 1);
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        DatabaseHelper dbHelper = new DatabaseHelper(getContext(), DATABASE_NAME, null, 2);
         View view = inflater.inflate(R.layout.fragment_playlist, container, false);
         recyclerView = view.findViewById(R.id.playlistRecyclerView);
         playlistsArraylist = dbHelper.getAllPlaylists(getContext());
@@ -54,14 +54,14 @@ public class PlaylistFragment extends Fragment {
         addPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewPlaylist();
+                addNewPlaylist(getContext());
             }
         });
         return view;
     }
-    public void addNewPlaylist() {
+    public void addNewPlaylist(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Add playlist");
+        builder.setTitle("Tạo danh sách phát");
 
         final EditText editText = new EditText(getContext());
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -69,21 +69,22 @@ public class PlaylistFragment extends Fragment {
 
         editText.requestFocus();
 
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                DatabaseHelper dbHelper = new DatabaseHelper(context, DATABASE_NAME, null, 2);
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
 
                 try {
                     ContentValues values = new ContentValues();
                     values.put(DatabaseHelper.PlaylistTable.COLUMN_NAME, editText.getText().toString().trim());
 
-                    long playlistId = db.insert(DatabaseHelper.PlaylistTable.TABLE_NAME, null, values);
+                    long result = db.insert(DatabaseHelper.PlaylistTable.TABLE_NAME, null, values);
 
-                    if (playlistId != -1) {
-                        Toast.makeText(getContext(),"Added", Toast.LENGTH_SHORT);
+                    if (result != -1) {
+                        Toast.makeText(getContext(),"Thêm thành công", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(getContext(),"Failed", Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(),"Thêm không thành công", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

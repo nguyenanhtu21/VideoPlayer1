@@ -1,21 +1,17 @@
 package com.example.videoplayer.adapter;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -36,11 +32,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     public static ArrayList<Video> videoList;
     final Context context;
+
+    private int selectedPlaylistPosition = -1;
 
     public VideoAdapter(ArrayList<Video> videoList, Context context) {
         this.videoList = videoList;
@@ -59,7 +56,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         Video video = videoList.get(position);
         holder.video_title.setText(video.getTitle());
         String size = videoList.get(position).getSize();
-        double milliSeconds = Double.parseDouble(videoList.get(position).getDuration());
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(context, Uri.parse(videoList.get(position).getPath()));
+        String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        try{
+            retriever.release();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        double milliSeconds = Double.parseDouble(duration);
         holder.video_size.setText(android.text.format.Formatter.formatFileSize(context, Long.parseLong(size)));
         holder.video_duration.setText(timeConvert((long) milliSeconds));
         Glide.with(holder.itemView.getContext())
@@ -79,40 +84,41 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         holder.menu_btn.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, holder.menu_btn);
             popupMenu.inflate(R.menu.video_menu);
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    if (item.getItemId() == R.id.rename_item) {
-                        renameVideo(filePath);
-                        return true;
-                    } else if (item.getItemId() == R.id.delete_item) {
-                        deleteVieo(filePath);
-                        return true;
-                    }else if (item.getItemId()==R.id.add_to_playlist_item){
-                        AddVideoPlaylistAdapter adapter;
-                        DatabaseHelper dbHelper = new DatabaseHelper(context, "videoplayer.db", null, 1);
-                        ArrayList<Playlist> playlists = dbHelper.getAllPlaylists(context);
-                        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetTheme);
-                        View bottomSheetView = LayoutInflater.from(context).inflate(R.layout.playlist_bottom_sheet,
-                                v.findViewById(R.id.bottom_sheet));
-                        RecyclerView recyclerView = bottomSheetView.findViewById(R.id.playlist_recyclerView);
-                        adapter = new AddVideoPlaylistAdapter(context, playlists);
-                        recyclerView.setAdapter(adapter);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                        bottomSheetDialog.setContentView(bottomSheetView);
-                        bottomSheetDialog.show();
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.rename_item) {
+                    renameVideo(filePath);
+                    return true;
+                } else if (item.getItemId() == R.id.delete_item) {
+                    deleteVideo(filePath);
+                    return true;
+                } else if (item.getItemId() == R.id.add_to_playlist_item) {
+                    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetTheme);
+                    View bottomSheetView = LayoutInflater.from(context).inflate(R.layout.playlist_bottom_sheet,
+                            v.findViewById(R.id.bottom_sheet));
+                    ArrayList<Playlist> playlists;
+                    DatabaseHelper dbHelper = new DatabaseHelper(context, "videoplayer.db", null, 2);
+                    playlists = dbHelper.getAllPlaylists(context);
+                    AddVideoPlaylistAdapter adapter = new AddVideoPlaylistAdapter(context, playlists);
+                    RecyclerView recyclerView = bottomSheetView.findViewById(R.id.playlist_recyclerView);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    bottomSheetDialog.setContentView(bottomSheetView);
+
+                    adapter.setPlaylistClickListener(playlistPosition -> {
+                        selectedPlaylistPosition = playlistPosition;
+                        Playlist playlist = playlists.get(selectedPlaylistPosition);
+                        dbHelper.addVideoToTable(video.getId(), video.getTitle(), video.getPath(), video.getDuration(), video.getSize(), video.getThumbnailUri());
+                        dbHelper.addVideoToPlaylist(context,video.getTitle(), playlist.getName());
+                        bottomSheetDialog.dismiss();
+                    });
+                    bottomSheetDialog.show();
+                    return true;
+                } else {
+                    return false;
                 }
             });
             popupMenu.show();
         });
-    }
-    public  void addVideoToPlaylist(Video video){
-
     }
 
     public void renameVideo(String filePath) {
@@ -153,7 +159,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         });
         builder.create().show();
     }
-    public void deleteVieo(String filePath){
+    public void deleteVideo(String filePath){
         final File file = new File(filePath);
         context.getApplicationContext().getContentResolver().
                 delete(MediaStore.Files.getContentUri("external"),
@@ -162,7 +168,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         notifyDataSetChanged();
         Toast.makeText(context,"Đã xóa",Toast.LENGTH_SHORT).show();
     }
-
     @Override
     public int getItemCount() {
         return videoList.size();

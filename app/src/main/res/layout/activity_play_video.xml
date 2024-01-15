@@ -16,7 +16,8 @@
         <VideoView
             android:id="@+id/videoView"
             android:layout_width="match_parent"
-            android:layout_height="406dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
             android:keepScreenOn="true"></VideoView>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

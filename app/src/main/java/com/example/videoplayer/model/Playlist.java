@@ -5,20 +5,10 @@ import java.util.ArrayList;
 public class Playlist {
     String  name;
     String id;
-    ArrayList<Video> videoList;
 
-    public Playlist(String name, String id, ArrayList<Video> videoList) {
+    public Playlist(String name, String id) {
         this.name = name;
         this.id = id;
-        this.videoList = videoList;
-    }
-
-    public ArrayList<Video> getVideoList() {
-        return videoList;
-    }
-
-    public void setVideoList(ArrayList<Video> videoList) {
-        this.videoList = videoList;
     }
 
     public String getName() {
