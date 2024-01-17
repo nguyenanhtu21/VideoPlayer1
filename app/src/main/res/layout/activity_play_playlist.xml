@@ -6,13 +6,13 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     android:background="@color/black"
-    tools:context=".PlayVideoActivity">
+    tools:context=".PlayPlaylistActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:gravity="center"
         android:layout_height="match_parent">
         <VideoView
-            android:id="@+id/videoView"
+            android:id="@+id/playlist_videoView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"

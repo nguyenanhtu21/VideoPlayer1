@@ -204,7 +204,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     Video video = new Video(id_file, title, path, duration, size, thumbnailUri);
                     videos.add(video);
                 }
-
                 videoCursor.close();
             }
             cursor.close();
@@ -213,6 +212,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return videos;
     }
+    public void deletePlaylist(String playlistID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + PlaylistTable.TABLE_NAME + " WHERE " + PlaylistTable.COLUMN_ID + " = '" + playlistID + "'");
+    }
+
+    public void renamePlaylist(String playlistID, String newName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE " + PlaylistTable.TABLE_NAME +
+                " SET " + PlaylistTable.COLUMN_NAME + " = '" + newName + "'" +
+                " WHERE " + PlaylistTable.COLUMN_ID + " = '" + playlistID + "'");
+    }
+
+
 
 
 

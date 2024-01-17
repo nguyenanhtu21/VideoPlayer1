@@ -1,11 +1,8 @@
-package com.example.videoplayer.ui.folder;
-
-import static com.example.videoplayer.adapter.PlaylistAdapter.playlists;
+package com.example.videoplayer.fragment.folder;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;

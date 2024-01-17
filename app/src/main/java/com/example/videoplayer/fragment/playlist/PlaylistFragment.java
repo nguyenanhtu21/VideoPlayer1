@@ -1,11 +1,9 @@
-package com.example.videoplayer.ui.playlist;
+package com.example.videoplayer.fragment.playlist;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.InputType;
@@ -14,22 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.videoplayer.R;
 import com.example.videoplayer.adapter.PlaylistAdapter;
 import com.example.videoplayer.database.DatabaseHelper;
-import com.example.videoplayer.databinding.FragmentPlaylistBinding;
 import com.example.videoplayer.model.Playlist;
 
 import java.util.ArrayList;
@@ -66,9 +58,7 @@ public class PlaylistFragment extends Fragment {
         final EditText editText = new EditText(getContext());
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(editText);
-
         editText.requestFocus();
-
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

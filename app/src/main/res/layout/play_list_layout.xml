@@ -41,16 +41,6 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="normal"></TextView>
-
-        <TextView
-            android:id="@+id/number_of_videos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:text="5 videos"
-            android:textColor="@color/video_size"
-            android:textSize="12sp"
-            android:textStyle="normal"></TextView>
     </LinearLayout>
 
     <ImageView
